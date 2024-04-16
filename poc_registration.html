@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>poc login</title>
+    <link rel="stylesheet" type="text/css" href="donorSignup.css"> 
+</head>
+<body>
+    <main>
+        <section class="container">
+            <h2>Welcome POC!</h2>
+            <h3>Register</h3>
+            <form action="poc_registration.php" method="POST" onsubmit ="return validate()">
+                <div class="form-row">
+                    <div class="form-column">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required><br><br>
+
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required><br><br>
+
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Minimum 8 characters" required><br><br>
+                        <span id="message" style="color:red"></span><br> 
+                    </div>
+                    <div class="form-column">
+                        <label for="contact">Contact Number</label>
+                        <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" required><br><br>
+                        
+                        <label for="address">Center Address</label>
+                        <input type="text" id="address" name="address" required><br><br>
+
+                        <label for="pincode">Pincode</label>
+                        <input type="tel" id="pincode" name="pincode" pattern="[0-9]{6}" required><br><br>
+                    </div>
+                </div>
+                <input type="submit" class="button" value="Submit" name="submit" required>
+            </form>
+         </section>
+    </main>
+    <script>  
+        function validate() {  
+            var pw = document.getElementById("password").value;  
+            // Check empty password field  
+            if(pw == "") {  
+                document.getElementById("message").innerHTML = "**Fill the password please!";  
+                return false;  
+            }  
+           
+            // Minimum password length validation  
+            if(pw.length < 8) {  
+                document.getElementById("message").innerHTML = "**Password length must be at least 8 characters";  
+                return false;  
+            }  
+            
+            // Maximum length of password validation  
+            if(pw.length > 15) {  
+                document.getElementById("message").innerHTML = "**Password length must not exceed 15 characters";  
+                return false;  
+            } else {  
+                //alert("Password is correct");  
+            }  
+        }  
+    </script>
+</body>
+</html>
