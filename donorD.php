@@ -5,7 +5,7 @@ include "connection.php";
 // Start the session
 session_start();
 
-// Function to generate a new donation_id
+/*// Function to generate a new donation_id
 function generateDonationID($conn) {
     $stmt = $conn->prepare("INSERT INTO donations (donor_id, status) VALUES (?, 0)");
     $stmt->bind_param("i", $_SESSION['donor_id']);
@@ -17,7 +17,7 @@ function generateDonationID($conn) {
         echo "Error generating donation ID: " . $stmt->error;
         return false;
     }
-}
+}*/
 
 // Check if the donor ID is set in the session
 if(isset($_SESSION['donor_id'])) {
@@ -26,7 +26,7 @@ if(isset($_SESSION['donor_id'])) {
     // Check if the donation ID is already set in the session
     if(isset($_SESSION['donation_id'])) {
         $donation_id = $_SESSION['donation_id'];
-    } else {
+    } /*else {
         // Generate a new donation_id and store it in the session
         $donation_id = generateDonationID($conn);
         if($donation_id) {
@@ -34,7 +34,7 @@ if(isset($_SESSION['donor_id'])) {
         } else {
             echo "Failed to generate donation ID.";
         }
-    }
+    }*/
 
     // SQL query to fetch donor information
     $sql = "SELECT * FROM donors WHERE donor_id = '$donor_id'";
@@ -73,7 +73,7 @@ if(isset($_SESSION['donor_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donor Dashboard</title>
-    <link rel="stylesheet" type="text/css" href="donorDashboard.css">
+    <link rel="stylesheet" type="text/css" href="donorDash.css">
 </head>
 <body>
     <header>
@@ -81,13 +81,14 @@ if(isset($_SESSION['donor_id'])) {
 
     <div class="tab">
 		  	<button class="tablinks" onclick="openTab(event, 'Home')" id="defaultOpen">Home</button>
-		  	<button class="tablinks" onclick="openTab(event, 'Make Donation')">Make Donation</button>
-		  	<button class="tablinks" onclick="openTab(event, 'View Previous Donations')">View Previous Donations</button>
-		  	<button class="tablinks" onclick="openTab(event, 'Account Settings')" >Account Settings</button>
+		  	<button class="tablinks" onclick="openTab(event, 'MakeDonation')">Make Donation</button>
+		  	<button class="tablinks" onclick="openTab(event, 'ViewPreviousDonations')">View Previous Donations</button>
+		  	<button class="tablinks" onclick="openTab(event, 'AccountSettings')" >Account Settings</button>
             <button onclick="logout()">Logout</button>
 	</div>
     
     </header>
+    
     <div id="Home" class="tabcontent">
      <h3> How can you help?</h3>
       <p style="text-align: center;"><strong>Contribute Food<strong></p>
@@ -102,7 +103,7 @@ if(isset($_SESSION['donor_id'])) {
     </section>
     </div>
 
-    <div id="Make Donation" class="tabcontent mini-box">
+    <div id="MakeDonation" class="tabcontent mini-box">
     <h2> <p style="text-align: center;">Make Donation</p></h2>
     <form action="process_donation.php" method="POST">
         
@@ -119,7 +120,8 @@ if(isset($_SESSION['donor_id'])) {
     </form>
 </div>
 
-    <div id="View Previous Donations" class="tabcontent">
+
+<div id="ViewPreviousDonations" class="tabcontent">
     <?php
         // Include the database connection file
         include "connection.php";
@@ -147,41 +149,59 @@ if(isset($_SESSION['donor_id'])) {
         $stmt = $conn->prepare($sql);
 
         if ($stmt) {
-        // Bind parameters
-        $stmt->bind_param("i", $donor_id);
+            // Bind parameters
+            $stmt->bind_param("i", $donor_id);
 
-        // Execute the query
-        $stmt->execute();
+            // Execute the query
+            $stmt->execute();
 
-        // Store the result
-        $result = $stmt->get_result();
+            // Store the result
+            $result = $stmt->get_result();
 
-        // Check if there are any previous donations
-        if ($result->num_rows > 0) {
-            // Display the table header
-            echo "<table border='5'>";
-            echo "<tr><th>Donation ID</th><th>Status</th><th>Food Name</th><th>Quantity</th><th>Date</th></tr>";
-            
-            // Display each donation record
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td>" . $row['donation_id'] . "</td>";
-                echo "<td>" . ($row['status'] ? 'Completed' : 'Pending') . "</td>";
-              //  echo "<td>" . $row['robinId'] . "</td>";
-                echo "<td>" . $row['food_name'] . "</td>";
-                echo "<td>" . $row['quantity'] . "</td>";
-                echo "<td>" . $row['date'] . "</td>"; // Use 'date' column for donation date
-                echo "</tr>";
+            // Check if there are any previous donations
+            if ($result->num_rows > 0) {
+                // Display the table header
+                echo "<table class='donation-table'>";
+                echo "<tr><th>Donation ID</th><th>Status</th><th>Food Name</th><th>Quantity</th><th>Date</th><th>Robin Details</th></tr>";
+                
+                // Display each donation record
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>" . $row['donation_id'] . "</td>";
+                    echo "<td>";
+                    // Display the status in green bold for 'Completed' and red bold for 'Pending'
+                    echo ($row['status'] ? "<strong style='color:green;'>Completed</strong>" : "<strong style='color:red;'>Pending</strong>");
+                    echo "</td>";
+                    echo "<td>" . $row['food_name'] . "</td>";
+                    echo "<td>" . $row['quantity'] . "</td>";
+                    echo "<td>" . $row['date'] . "</td>"; // Use 'date' column for donation date
+
+                    // Fetch Robin details using the RobinID from the donations table
+                    $robinID = $row['robinID'];
+                    $robinDetailsQuery = "SELECT name, contactNumber FROM robins WHERE robinID = ?";
+                    $robinDetailsStmt = $conn->prepare($robinDetailsQuery);
+                    $robinDetailsStmt->bind_param("i", $robinID);
+                    $robinDetailsStmt->execute();
+                    $robinDetailsResult = $robinDetailsStmt->get_result();
+
+                    if ($robinDetailsResult->num_rows > 0) {
+                        $robinDetails = $robinDetailsResult->fetch_assoc();
+                        echo "<td>" . $robinDetails['name'] . " (" . $robinDetails['contactNumber'] . ")</td>";
+                    } else {
+                        echo "<td>No details available</td>";
+                    }
+
+                    echo "</tr>";
+                }
+
+                // Close the table
+                echo "</table>";
+            } else {
+                echo "No previous donations found.";
             }
 
-            // Close the table
-            echo "</table>";
-        } else {
-            echo "No previous donations found.";
-        }
-
-        // Close the prepared statement
-        $stmt->close();
+            // Close the prepared statement
+            $stmt->close();
         } else {
             // Error preparing statement
             echo "Error preparing statement: " . $conn->error;
@@ -192,28 +212,35 @@ if(isset($_SESSION['donor_id'])) {
     ?>
 
 
-    </div>
+</div>
 
 
-    <div id="Account Settings" class="tabcontent ">
     
-    		<!--delete account button -->
-			<button onclick= "deleteAcc()" >Delete Account</button>
+    
+
+
+    <div id="AccountSettings" class="tabcontent mini-box">
 			
-            <form  method="POST"action='editProfile.php' class = mini-box>
-            <p style="text-align: center;"> Edit the fields which you want to update .</p><br>   
-            <p style="text-align: center;"> <label for="NewUsername">Username</label></p>
+    <h2> <p style="text-align: center;"> Update details</p></h2>
+			
+            <form  method="POST" action='editProfile.php' >
+
+
+            <p ><label for="NewUsername">Username</label></p>
             <p style="text-align: center;"> <input type="text" id="NewUsername" name="NewUsername" value="<?php echo"$username"; ?>"></p>
-            <p style="text-align: center ;">   <label for="password">Password</label></p>
-            <p style="text-align: center;">   <input type="text" id="password" name="password" value="<?php
- echo"$password"; ?>"></p><br><br>
-           		
-                
+
+            <p ><label for="password">Password</label></p>
+            <p style="text-align: center;">   <input type="text" id="password" name="password" value=""></p><br>
+           		 
             <p style="text-align: center;"> <input type='hidden' name='donor_id' value="<?php echo"$donor_id"; ?>"></p>
-            <p style="text-align: center;">   <input type="submit" value="submit" name="submit"></p>
+            <p style="text-align: center;">   <input type="submit" value="Submit" name="submit"></p>
                 
             </form>
-		</div>
+
+            <br><p style="text-align: center;">---------------------------------- OR ----------------------------------</p><br>
+            <h2><button onclick= "deleteAcc()" > Delete Account</button></h2>
+            
+</div>
     <footer>
         <p>You are making a difference!</p>
         <p>Thank you for your generosity.</p>

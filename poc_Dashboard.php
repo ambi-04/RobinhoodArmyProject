@@ -15,6 +15,7 @@
 		  	<button class="tablinks" onclick="openTab(event, 'Unassigned Donations')">Unassigned Donations</button>
 		  	<button class="tablinks" onclick="openTab(event, 'Assigned Donations')">Assigned Donations</button>
 		  	<button class="tablinks" onclick="openTab(event, 'Account Settings')" >Account Settings</button>
+		  	<button class="tablinks" onclick="openTab(event, 'Analytics')" >Analytics</button>
 			<button onclick="logout()">Logout</button>
 		</div>
 	</header>
@@ -38,8 +39,9 @@
 			$address = $row['address'];
 			$poc_id = $row['poc_id'];
 			$name = $row['name'];
+			$email = $row['email'];
 			$contact = $row['contact'];
-			echo "<pre><h4> POC ID: $poc_id  Branch: $address  pincode: $pincode  Name of head:  $name   </h4></pre><hr>";
+			echo "<pre><h4> POC ID: $poc_id  Branch: $address  pincode: $pincode  Name of head:  $name   Email:  $email  </h4></pre><hr>";
 			
 			//retreive the Robin details under that POC
 			$sql_robinDetails = "SELECT * FROM robins WHERE poc_id = '$poc_id' ";
@@ -155,6 +157,67 @@
 			}
 			?>
 		</div>
+		
+		<div id="Analytics" class="tabcontent">
+			<?php
+ 				error_reporting(E_ALL);
+		  		ini_set('display_errors', 1);
+				$dataPoints = array();
+					foreach ($arr as $x)
+					{
+  						$sql_don_robin = "SELECT 
+            (SELECT COUNT(robinId) FROM donations WHERE robinId = '$x') AS count1,
+            (SELECT COUNT(robinId) FROM donations_backup WHERE robinId = '$x') AS count2
+        FROM dual";
+  						
+  						$result_don_robin = $conn->query($sql_don_robin);
+  						$row_don_robin = mysqli_fetch_assoc($result_don_robin);
+  						$number = $row_don_robin['count1'] + $row_don_robin['count2'];
+  						$dataPoints[] = array("y" => $number, "label" => $x);
+					}
+					/*array("y" => 3373.64, "label" => "Germany" ),
+					array("y" => 2435.94, "label" => "France" ),
+					array("y" => 1842.55, "label" => "China" ),
+					array("y" => 1828.55, "label" => "Russia" ),
+					array("y" => 1039.99, "label" => "Switzerland" ),
+					array("y" => 765.215, "label" => "Japan" ),
+					array("y" => 612.453, "label" => "Netherlands" )*/
+			
+			?>
+			<script>
+				window.onload = function() {
+				 
+				var chart = new CanvasJS.Chart("chartContainer", {
+					animationEnabled: true,
+					theme: "light1",
+					title:{
+						text: "Donations completed by Robins"
+					},
+					axisY: {
+						title: "No of donations",
+						interval: 1
+					},
+					axisX: {
+						title: "Robin ID",
+						
+					},
+					data: [{
+						type: "column",
+						yValueFormatString: "#,##0.## donations",
+						dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
+					}]
+				});
+				chart.render();
+				 
+				}
+			</script>
+ 			<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+ 			
+			<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+			
+		</div>
+		
+		
 		<div id="Account Settings" class="tabcontent mini-box">
 			<p style="text-align: center;"><strong> Edit the fields which you want to update </strong></p>
 			
@@ -179,7 +242,6 @@
 			<p style="text-align: center;"> <input type="submit" value="submit" name="submit"></p>
                 
             </form>
-            
 		</div>
 	<script>
 		 function logout() {
@@ -205,4 +267,3 @@
 	</script>
 </body>
 </html>
-

@@ -18,6 +18,8 @@
 		$username = $_POST['username'];
 		$name = $_POST['name'];
 		$contact = $_POST['contact'];
+		$email = $_POST['email'];
+		$aadhaar = $_POST['aadhaar'];
 		$pincode = $_POST['pincode'];
 		$address = $_POST['address'];
 		$password = $_POST['password'];
@@ -36,19 +38,20 @@
 		echo "username already exists";
 	else if($num_rows2 != 0)
 	{
-		echo" poc already exists at that pincode";
+		echo" sorry, poc already exists at that pincode. return to";
+		echo "<a href= 'index.html'>  Homepage</a>";
 	}
 	else
 	{
 		// SQL to insert data into database
-		$sql = "INSERT INTO pocs( username, name, password, contact,pincode, address)
-		    VALUES ('$username', '$name', '$password','$contact','$pincode', '$address')";
+		$sql = "INSERT INTO pocs( username, name, password, contact,pincode, address , email , aadhaar)
+		    VALUES ('$username', '$name', '$password','$contact','$pincode', '$address', '$email', '$aadhaar')";
 
 		if ($conn->query($sql) === TRUE)
 		{
 			echo "<h3> Registered Successfully ! Please login now to continue</h3><br><br><br>";
 			echo "<a href= 'poc_Login.php'>Login</a>";
-			echo "<a href= 'poc_Login.php'>Login</a>";
+			
 		}
 		else
 		{
