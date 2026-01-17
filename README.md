@@ -47,7 +47,7 @@ The system enhances **coordination, accountability, and efficiency** in food red
 
 1. Clone the repository
 ```
-git clone https://github.com/swarali-17/Robin-Hood-Army-Management-System.git
+git clone https://github.com/ambi-04/RobinhoodArmyProject.git
 ```
 
 2. Move project folder into XAMPP htdocs
@@ -62,8 +62,14 @@ C:/xampp/htdocs/Robin-Hood-Army-Management-System/
 http://localhost/phpmyadmin
 ```
 
-5. Create a database (example name: robinhood)
-
+5. Create a database (example name: robinhood).Update connection.php with the database credentials:
+```
+$servername = "localhost";
+$username = "root";
+$password = "your-password";
+$port = 3307;
+$database = "your-database-name";
+```
 6. Import the provided robinhood.sql file into this database
 
 7. Open the project in browser:
