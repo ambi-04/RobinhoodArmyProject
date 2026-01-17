@@ -75,9 +75,9 @@ http://localhost/Robin-Hood-Army-Management-System/
 
 ---
 
-## 🎥 Demo Video  
-📌 *Demo link will be added soon*  
-`[Demo Coming Soon]`
+## 🎥 Demo 
+![Demo](demo.gif)
+
 
 ---
 
