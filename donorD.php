@@ -94,7 +94,7 @@ if(isset($_SESSION['donor_id'])) {
       <p style="text-align: center;"><strong>Contribute Food<strong></p>
       
        <p style="text-align: center;">If you manage a restaurant or generally want to contribute regular meals from your family or workplace, let’s connect.</p>
-       <img src="image.png" alt="Image Description" style="float: center; max-width: 600px;">
+       <img src="image.webp" alt="Image Description" style="float: center; max-width: 600px;">
         <!-- Display donor information -->
         <!-- <p><strong>Username:</strong> <?php echo isset($username) ? $username : ""; ?></p>
         <p><strong>Name:</strong> <?php echo isset($name) ? $name : ""; ?></p>
